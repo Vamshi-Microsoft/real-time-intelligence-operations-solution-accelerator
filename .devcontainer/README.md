@@ -1,6 +1,6 @@
 # Dev Container Configuration
 
-This directory contains the development container configuration for the **Unified Data Foundation with Fabric** solution accelerator.
+This directory contains the development container configuration for the **Real-Time Intelligence for Operations** solution accelerator.
 
 ## What is a Dev Container?
 
@@ -9,7 +9,7 @@ A development container (or dev container for short) allows you to use a contain
 ## Features Included
 
 ### Core Tools
-- **Python 3.11** with pip
+- **Python 3.14** with pip and venv
 - **Azure CLI** with Bicep extension
 - **Azure Developer CLI (azd)**
 - **PowerShell** (for cross-platform script execution)
@@ -22,12 +22,14 @@ A development container (or dev container for short) allows you to use a contain
 - **Pylance** language server
 - **pytest** testing framework
 - **mypy** type checker
+- **Bandit** security linter
 
 ### VS Code Extensions
-- Python development extensions
-- Azure tooling extensions
-- Jupyter notebook support
-- GitHub Copilot (if available)
+- GitHub Copilot and Copilot Chat
+- Python development extensions (Python, Pylance, Black formatter)
+- Azure tooling extensions (Azure CLI, Bicep, Azure Developer CLI)
+- Jupyter notebook support with cell tags and slideshow
+- GitHub Actions
 - PowerShell extension
 - YAML and JSON support
 
@@ -52,17 +54,24 @@ A development container (or dev container for short) allows you to use a contain
 
 ### First Time Setup
 
-After the container starts, authenticate with Azure:
+After the container starts, configure Git and authenticate with Azure:
 
 ```bash
+# Configure Git (required for commits)
+git config --global user.name "Your Name"
+git config --global user.email "your-email@domain.com"
+
 # Authenticate with Azure CLI
 az login
 
 # Authenticate with Azure Developer CLI
 azd auth login
 
-# Set your admin email for Fabric deployment
-azd env set AZURE_FABRIC_ADMIN_USER_EMAIL "your-email@domain.com"
+# Recommended: set email to receive alerts
+azd env set FABRIC_ACTIVATOR_ALERTS_EMAIL "myteam@company.com"
+
+# Optional: Customize resource names
+azd env set FABRIC_WORKSPACE_NAME "My RTI Workspace"
 
 # Deploy the solution
 azd up
@@ -72,18 +81,21 @@ azd up
 
 The dev container includes:
 
-- **Base Image**: Microsoft's Python 3.11 dev container
+- **Base Image**: Microsoft's Python 3.14 dev container (Debian Trixie)
 - **Mounted Volumes**: Your local `.azure` directory for persistent authentication
 - **Port Forwarding**: Ports 8000, 8080, and 8888 for web applications
-- **Environment Variables**: Azure telemetry disabled by default
+- **Post-Create Script**: Automatically installs project dependencies and development tools
 
 ## Development Workflow
 
 1. **Code Development**: Use VS Code with full IntelliSense and debugging support
 2. **Testing**: Run `pytest` for unit tests
 3. **Formatting**: Code is auto-formatted with Black on save
-4. **Deployment**: Use `azd up` to deploy to Azure
-5. **Notebooks**: Use `jupyter lab` for interactive development
+4. **Security Scanning**: Use `bandit` to scan for security issues
+5. **Deployment**: Use `azd up` to deploy to Azure
+6. **Event Simulation**: Use `python infra/scripts/event_simulator.py` to generate real-time telemetry data
+7. **Data Ingestion**: Use `python infra/scripts/fabric/fabric_data_ingester.py` for batch data operations
+8. **Notebooks**: Use `jupyter lab` for interactive development
 
 ## Troubleshooting
 
@@ -116,7 +128,36 @@ You can customize the dev container by:
 ✅ **Isolated**: Container doesn't affect your host machine  
 ✅ **Pre-configured**: Ready to use with all necessary tools  
 ✅ **Cloud-ready**: Works with GitHub Codespaces  
+✅ **Latest Python**: Uses Python 3.14 with all modern features  
+✅ **Azure-optimized**: Pre-configured for Microsoft Fabric and Azure services  
 
 ---
 
 For more information about dev containers, visit the [official documentation](https://containers.dev/).
+
+## Installed Python Packages
+
+The dev container comes with the following Python packages pre-installed:
+
+### Azure SDK Libraries
+- `azure-identity` - Authentication for Azure services
+- `azure-core` - Core Azure SDK functionality
+- `azure-storage-file-datalake` - OneLake and Data Lake Storage operations
+- `azure-mgmt-eventhub` - Event Hub management
+- `azure-kusto-data` - Kusto/KQL database connections
+- `azure-kusto-ingest` - Data ingestion to Kusto databases
+- `azure-eventhub` - Event Hub client for sending events
+
+### Data Processing & Utilities
+- `pandas` - Data manipulation and analysis
+- `requests` - HTTP API calls
+- `python-dateutil` - Date/time utilities
+
+### Development Tools
+- `black` - Code formatter
+- `flake8` - Linter
+- `pytest` - Testing framework
+- `mypy` - Type checker
+- `bandit` - Security linter
+- `jupyter` & `jupyterlab` - Interactive notebooks
+- `ipykernel` - Jupyter kernel support
