@@ -28,7 +28,7 @@ Environment Variables (from Bicep outputs):
     AZURE_SUBSCRIPTION_ID - The Azure subscription ID (from azd environment)
     AZURE_ENV_NAME - The azd environment name (used as solution name)
     AZURE_FABRIC_CAPACITY_NAME - The name of the Fabric capacity resource
-    AZURE_FABRIC_ADMIN_MEMBERS - The identities added as Fabric Capacity Admin members
+    AZURE_FABRIC_CAPACITY_ADMINISTRATORS - The identities added as Fabric Capacity Admin members
     AZURE_EVENT_HUB_NAMESPACE_NAME - The name of the Event Hub Namespace created for ingestion
     AZURE_EVENT_HUB_NAMESPACE_HOSTNAME - The hostname of the Event Hub Namespace created for ingestion  
     AZURE_EVENT_HUB_NAME - The name of the Event Hub created for ingestion
@@ -148,15 +148,11 @@ def main():
     print("✅ Workspace-specific authentication successful")
     
     # Step 2: Setup workspace administrators
-    
-    # Get workspace administrators from environment variable (comma-separated list)
-    
     print_step(2, 11, "Setting up Fabric workspace administrators", workspace_id=workspace_id, admin_list=workspace_administrators or "None")
     
     try:
         administrators_result = setup_workspace_administrators(
             workspace_client=workspace_client,
-            workspace_id=workspace_id,
             fabric_admins_csv=workspace_administrators
         )
         if administrators_result is None:

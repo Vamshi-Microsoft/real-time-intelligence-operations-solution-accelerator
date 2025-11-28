@@ -3,18 +3,16 @@
 Fabric Workspace Administrators Management Module
 
 This module provides functionality to add administrators to a Microsoft Fabric workspace.
-Supports both user principal names (UPNs) and service principal object IDs.
+Supports both user principal names (UPNs) and service principal object IDs via CSV input.
 
 Features:
-- Add administrators by UPN (user@contoso.com) with Graph API resolution
-- Add administrators by object ID with fallback logic for User/ServicePrincipal types
+- Add administrators by UPN (user@contoso.com) or GUID with Graph API resolution
 - Skip existing administrators to avoid duplicates
 - Comprehensive error handling and reporting
 - Support for both individual users and service principals
 
 Usage:
-    python fabric_workspace_admins.py --workspace-id "12345678-1234-1234-1234-123456789012" --fabricAdmins user@contoso.com admin@company.com
-    python fabric_workspace_admins.py --workspace-id "12345678-1234-1234-1234-123456789012" --fabricAdminsByObjectId 12345678-1234-1234-1234-123456789012
+    python fabric_workspace_admins.py --workspace-id "12345678-1234-1234-1234-123456789012" --fabricAdmins-csv "user@contoso.com,admin@company.com,12345678-1234-1234-1234-123456789012"
 
 Requirements:
     - fabric_api.py module in the same directory
@@ -175,63 +173,32 @@ def add_workspace_admin(workspace_client, admin_identifier, existing_principals,
     except Exception as e:
         return {'status': 'failed', 'message': f'Unexpected error: {str(e)}'}
 
-def add_workspace_admin_by_object_id(workspace_client, object_id, existing_principals):
-    """Add workspace administrator by object ID using fallback logic to try both User and ServicePrincipal types."""
-    # Check if already exists
-    if object_id.lower() in existing_principals:
-        print(f"    ⏭️ Skipping '{object_id}' - already a workspace administrator")
-        return {'status': 'skipped', 'message': 'Already exists'}
-    
-    print(f"    🔐 Adding administrator by Object ID: {object_id}")
-    print(f"       Will try both User and ServicePrincipal types...")
-    
-    # Try both User and ServicePrincipal types
-    for principal_type in ["User", "ServicePrincipal"]:
-        try:
-            print(f"       Trying as {principal_type}...")
-            workspace_client.add_role_assignment(
-                principal_id=object_id,
-                principal_type=principal_type,
-                role="Admin"
-            )
-            print(f"    ✅ Successfully added '{object_id}' as workspace administrator ({principal_type})")
-            existing_principals.add(object_id.lower())
-            return {'status': 'success', 'message': f'Added successfully as {principal_type}'}
-        except FabricApiError as e:
-            print(f"       Failed as {principal_type}: {str(e)}")
-        except Exception as e:
-            print(f"       Unexpected error as {principal_type}: {str(e)}")
-    
-    return {'status': 'failed', 'message': 'Failed to add as both User and ServicePrincipal types'}
 
-def setup_workspace_administrators(workspace_client: FabricWorkspaceApiClient, workspace_id: str, fabric_admins_csv: str = None, fabric_admins: list = None, fabric_admins_by_object_id: list = None) -> dict:
+
+def setup_workspace_administrators(workspace_client: FabricWorkspaceApiClient, fabric_admins_csv: str = None) -> dict:
     """
     Add administrators to a Microsoft Fabric workspace.
     
     Args:
         workspace_client: Authenticated FabricWorkspaceApiClient instance
-        workspace_id: ID of the workspace to add administrators to
-        fabric_admins_csv: Comma-separated string of administrators (UPNs or GUIDs) - primary input method
-        fabric_admins: List of administrators to add (UPNs or object IDs with Graph API resolution) - legacy support
-        fabric_admins_by_object_id: List of object IDs to add as administrators (with fallback logic) - legacy support
+        fabric_admins_csv: Comma-separated string of administrators (UPNs or GUIDs)
         
     Returns:
         Dict with operation results including counts of added, skipped, and failed assignments
     """
-    # Parse comma-separated input if provided
-    parsed_admins = []
-    if fabric_admins_csv:
-        # Split by comma and clean up whitespace
-        parsed_admins = [admin.strip() for admin in fabric_admins_csv.split(',') if admin.strip()]
-        print(f"📋 Parsed {len(parsed_admins)} administrator(s) from comma-separated input: {', '.join(parsed_admins)}")
-    
-    # Combine with legacy list inputs for backward compatibility
-    all_fabric_admins = parsed_admins + (fabric_admins or [])
-    
-    if not all_fabric_admins and not fabric_admins_by_object_id:
+    # Parse comma-separated input
+    if not fabric_admins_csv:
         print("ℹ️ No administrators specified - skipping workspace administrator setup")
         return {'added': 0, 'skipped': 0, 'failed': 0, 'errors': []}
     
+    # Split by comma and clean up whitespace
+    admins_to_add = [admin.strip() for admin in fabric_admins_csv.split(',') if admin.strip()]
+    
+    if not admins_to_add:
+        print("ℹ️ No valid administrators found - skipping workspace administrator setup")
+        return {'added': 0, 'skipped': 0, 'failed': 0, 'errors': []}
+    
+    print(f"📋 Parsed {len(admins_to_add)} administrator(s): {', '.join(admins_to_add)}")
     print(f"👥 Setting up workspace administrators...")
     
     # Initialize Graph API client
@@ -247,38 +214,22 @@ def setup_workspace_administrators(workspace_client: FabricWorkspaceApiClient, w
     
     workspace_stats = {'added': 0, 'skipped': 0, 'failed': 0, 'errors': []}
     
-    # Phase 1: Process fabricAdmins (UPNs and object IDs with Graph API resolution)
-    if all_fabric_admins:
-        print(f"    👥 Adding fabricAdmins...")
-        
-        for admin_identifier in all_fabric_admins:
-            result = add_workspace_admin(workspace_client, admin_identifier, existing_admin_principals, graph_client)
-            
-            if result['status'] == 'success':
-                workspace_stats['added'] += 1
-            elif result['status'] == 'skipped':
-                workspace_stats['skipped'] += 1
-            else:  # failed
-                workspace_stats['failed'] += 1
-                workspace_stats['errors'].append(f"{admin_identifier}: {result['message']}")
+    # Process administrators (UPNs and object IDs with Graph API resolution)
+    print(f"    👥 Adding administrators...")
     
-    # Phase 2: Process fabricAdminsByObjectId (Object IDs with fallback logic)
-    if fabric_admins_by_object_id:
-        print(f"    👥 Adding fabricAdminsByObjectId...")
+    for admin_identifier in admins_to_add:
+        result = add_workspace_admin(workspace_client, admin_identifier, existing_admin_principals, graph_client)
         
-        for object_id in fabric_admins_by_object_id:
-            result = add_workspace_admin_by_object_id(workspace_client, object_id, existing_admin_principals)
-            
-            if result['status'] == 'success':
-                workspace_stats['added'] += 1
-            elif result['status'] == 'skipped':
-                workspace_stats['skipped'] += 1
-            else:  # failed
-                workspace_stats['failed'] += 1
-                workspace_stats['errors'].append(f"{object_id}: {result['message']}")
+        if result['status'] == 'success':
+            workspace_stats['added'] += 1
+        elif result['status'] == 'skipped':
+            workspace_stats['skipped'] += 1
+        else:  # failed
+            workspace_stats['failed'] += 1
+            workspace_stats['errors'].append(f"{admin_identifier}: {result['message']}")
     
     # Print workspace summary
-    total_requested = len(all_fabric_admins or []) + len(fabric_admins_by_object_id or [])
+    total_requested = len(admins_to_add)
     print(f"    📊 Workspace administrators summary - Added: {workspace_stats['added']}, Skipped: {workspace_stats['skipped']}, Failed: {workspace_stats['failed']}, Total: {total_requested}")
     
     # Show error details if any failures occurred
@@ -308,28 +259,13 @@ def main():
         description='Add administrators to a Microsoft Fabric workspace')
     parser.add_argument('--workspace-id', required=True,
                         help='ID of the workspace to add administrators to')
-    parser.add_argument('--fabricAdmins-csv',
+    parser.add_argument('--fabricAdmins-csv', required=True,
                         help='Comma-separated list of administrators (UPNs or GUIDs). Example: user1@contoso.com,user2@contoso.com,12345678-1234-1234-1234-123456789012')
-    parser.add_argument('--fabricAdmins', nargs='*', default=[],
-                        help='List of administrators to add. Can include user principal names (UPNs) like user@contoso.com or service principal IDs (GUIDs) like 12345678-1234-1234-1234-123456789012')
-    parser.add_argument('--fabricAdminsByObjectId', nargs='*', default=[],
-                        help='List of object IDs (GUIDs) to add as workspace administrators. These will be tried as both User and ServicePrincipal types. Format: 12345678-1234-1234-1234-123456789012')
     args = parser.parse_args()
-
-    # Check if at least one admin type is provided
-    if not args.fabricAdmins_csv and not args.fabricAdmins and not args.fabricAdminsByObjectId:
-        print("❌ ERROR: At least one of --fabricAdmins-csv, --fabricAdmins or --fabricAdminsByObjectId must be provided")
-        parser.print_help()
-        sys.exit(1)
 
     print(f"🚀 Starting Microsoft Fabric workspace administrator management")
     print(f"📁 Workspace ID: {args.workspace_id}")
-    if args.fabricAdmins_csv:
-        print(f"📋 Administrators (CSV): {args.fabricAdmins_csv}")
-    if args.fabricAdmins:
-        print(f"📋 Administrators to add: {', '.join(args.fabricAdmins)}")
-    if args.fabricAdminsByObjectId:
-        print(f"📋 Administrators to add by Object ID: {', '.join(args.fabricAdminsByObjectId)}")
+    print(f"📋 Administrators (CSV): {args.fabricAdmins_csv}")
     print("-" * 60)
 
     # Initialize Fabric API clients
@@ -350,10 +286,7 @@ def main():
     # Setup workspace administrators
     result = setup_workspace_administrators(
         workspace_client=workspace_client,
-        workspace_id=args.workspace_id,
-        fabric_admins_csv=args.fabricAdmins_csv,
-        fabric_admins=args.fabricAdmins if args.fabricAdmins else None,
-        fabric_admins_by_object_id=args.fabricAdminsByObjectId if args.fabricAdminsByObjectId else None
+        fabric_admins_csv=args.fabricAdmins_csv
     )
 
     if result is None:

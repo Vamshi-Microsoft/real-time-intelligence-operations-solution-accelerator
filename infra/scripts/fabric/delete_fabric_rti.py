@@ -13,7 +13,7 @@ Functions executed in order:
 4. delete_workspace - Delete the Fabric workspace
 
 Usage:
-    python remove_fabric_rti.py
+    python delete_fabric_rti.py
 
 Environment Variables (from Bicep outputs):
     AZURE_ENV_NAME - Name of the Azure environment
