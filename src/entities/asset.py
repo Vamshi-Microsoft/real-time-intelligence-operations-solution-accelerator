@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 import random
 import uuid
-from event import Event
+from entities.event import Event
 
 @dataclass
 class Asset:
@@ -22,18 +22,7 @@ class Asset:
             "SerialNumber": self.SerialNumber,
             "MaintenanceStatus": self.MaintenanceStatus
         }
-
-    @staticmethod
-    def get_table_schema() -> str:
-        return """(
-            Id: string,
-            Name: string,
-            SiteId: int,
-            Type: string,
-            SerialNumber: string,
-            MaintenanceStatus: string
-        )"""
-    
+        
     @staticmethod
     def get_type_map():
         return {
