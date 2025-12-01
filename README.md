@@ -54,34 +54,22 @@ If you'd like to customize the solution accelerator, here are some common areas 
 <br/>
 
 ### Key features
-<details open>
-  <summary>Click to learn more about the key features this solution enables</summary>
+<details>
+  <summary>Click to learn more about the key features this solution enables</summary>  - **Fabric Data Ingestion Program and Real Time Event Simulator** <br/>Two data simulators: (1) One-time batch data simulator to generate or re-generate up to 90 days or specific periods of historical sensor data, and load to Fabric EventHouse (2) real time telemetry data simulator to generate real time up to the moment events that are streamed into Azure Event Hub. For more details, please refer to [Fabric Data Ingestion Guide](./docs/FabricDataIngestion.md) and  [Event Simulator Guide](./docs/EventSimulatorGuide.md).
 
+  - **Real Time Intelligence Operations Dashboard** <br/>Real-Time Intelligence Operations Dashboard provides overview on how manufacturing assets are performing, and showing individual sensor data trends such as Speed, Vibration, Temperature, Humidity, and Defect Probability. For details, please refer to [Real Time Intelligence Dashboard Guide](./docs/RealTimeIntelligenceDashboardGuide.md).
 
+  - **Fabric EventHouse with Customized Fabric Data Agent**
 
-  - **Fabric Data Ingestion Program** <br/>The data ingestion program ingests data in a batch operation that can fill in 90 days of historical data, replace existing data, or generates historical data for specified period. For information on how to use it, please refer to [Fabric Data Ingestion Guide](./docs/FabricDataIngestion.md).
+    Fabric EventHouse hosts manufacturing telemetry data. You can use conversational interface powered by Fabric Data Agent for live operational queries.  Please refer to [Fabric Data Agent Guide](./docs/FabricDataAgentGuide.md) for details. 
 
-  - **Real Time Event Simulator** <br/>The real time event simulator is a practical data simulator that is used to simulate the manufacturing sensor data. It provides a data driver for the solution accelerator. For information how to use it, please refer to [Event Simulator Guide](./docs/EventSimulatorGuide.md).
+  - **Anomaly Detection and Alerts through Fabric Activator** <br/>Microsoft Activator is configured with anomaly detection rules that triggers outlook email notifications when an anomaly occurs. For more details, please refer to [Activator Guide](./docs/ActivatorGuide.md).
 
-  - **Real Time Intelligence Operations Dashboard** <br/>Real-Time Intelligence Operations Dashboard provides overview on how manufacturing assets are performing, and showing individual sensor data trends such as Speed, Vibration, Temperature, Humidity, and Defect Probability. It also shows daily anomaly rates for monitored assets. For details, please refer to [Real Time Intelligence Dashboard Guide](./docs/RealTimeIntelligenceDashboardGuide.md).
-
-  - **Fabric Eventhouse with Customized Fabric Data Agent**
-
-    Fabric evenhouse with an event database hosting simulated manufacturing telemetry data, stored in the `events` table, and related dimension tables such as `locations`, `sites`, `assets`, and `products`.  The deployment process creates 90 days of historical data with dates backtracked from the moment of deployment. After deployment, you can use the Fabric data Ingestion Program to refresh historic data, and the Real Time Event Simulator to send real time telemetry data to the deployed Event Hub, which sends to Fabric Event Stream which stores the real time telemetry data to the same `events` table. 
-
-    A Fabric Data Agent can be created with the necessary configurations. Please refer to [Fabric Data Agent Guide](./docs/FabricDataAgentGuide.md) for details. Once created and configured, the Fabric Data Agent will be able to answer business questions by getting insights from the data stored in the EventHouse component. 
-
-  - **Anomaly Detection and Alerts through Fabric Activator** <br/>Microsoft Activator is another key solution element that has configured anomaly detection rules. The rules are set to send outlook email notifications when an anomaly occurs with the detailed sensor data. It can also be easily configured to send the same information to a specified Teams channel. For more details, please refer to [Activator Guide](./docs/ActivatorGuide.md).
-
-  - **Useful Data Analysis KQL Code** <br/>We used comprehensive data analysis KQL code to get insights from the data sets utilized. This provides a base to develop additional features for the solution. The code with documentation is provided to help users to get a quick start on data analysis. For more details please refer to [Data Analysis KQL Guide](./src/kql/data_analysis/data_analysis_guide.md). 
-
-  - **Useful Performance Metrics KQL Code** <br/>A group of useful data analysis and performance metrics tracking KQL query sets are provided. These query sets can be used to develop additional dashboard tiles. For more information, please refer to [Performance Metrics KQL Queryset Guide](./src/kql/kql_queryset/kql_queryset_guide.md). 
+  - **Useful Data Analysis and Performance Metrics KQL Code** <br/>Reusable KQL code is provided to get you started quickly. For more details please refer to [Data Analysis KQL Guide](./src/kql/data_analysis/data_analysis_guide.md) and [Performance Metrics KQL Queryset Guide](./src/kql/kql_queryset/kql_queryset_guide.md). 
 
   - **Demonstrator's Guide** <br/> After successful deployment of the solution accelerator, you or your colleague who has required access can demonstrate this solution by following the steps outlined in the [Demonstrator's Guide](./docs/DemonstratorGuide.md).
 
 </details>
-
-
 
 <br /><br />
 
