@@ -156,8 +156,6 @@ jobs:
             -ScriptPath "infra/scripts/fabric/deploy_fabric_rti.py" \
             -SkipPythonVirtualEnvironment \
             -SkipPythonDependencies \
-            -SkipPipUpgrade \
-            -SkipPythonDependencies \
             -SkipPipUpgrade
 
           echo "✅ RTI fabric items provisioning completed"
