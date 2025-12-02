@@ -70,8 +70,9 @@ Before starting, ensure your deployment identity has the following requirements.
 - [ ] **`Microsoft.EventHub` Resource Provider Access**: Verify your Azure Subscription has Event Hub resource provider enabled
 
 ### 🔗 API Permissions
-- [ ] **Fabric REST API - Workspace Management**: Access to create and manage Fabric workspaces
-- [ ] **Fabric REST API - Item Creation**: Access to create Eventhouses, KQL databases, and dashboards
+- [ ] **Service principals and managed identities support on Fabric REST API**: To use service principals and managed identities with Fabric REST APIs (GitHub actions require it), [enable the `Service principals can use Fabric` APIs tenant setting](https://learn.microsoft.com/rest/api/fabric/articles/identity-support)
+- [ ] **Fabric REST API - Workspace Management**: Access to create and manage Fabric workspaces ([see scopes](https://learn.microsoft.com/rest/api/fabric/articles/scopes))
+- [ ] **Fabric REST API - Item Creation**: Access to create Eventhouses, KQL databases, and dashboards ([see scopes](https://learn.microsoft.com/rest/api/fabric/articles/scopes))
 - [ ] **Azure Event Hubs API**: Access to create and manage Event Hub resources
 
 ### 💻 Software Requirements
