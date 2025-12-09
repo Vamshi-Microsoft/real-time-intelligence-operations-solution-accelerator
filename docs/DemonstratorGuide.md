@@ -7,7 +7,7 @@ This guide provides instructions for demonstrating the Real-Time Intelligence Op
 Before beginning the demonstration, verify your access permissions:
 
 - **If deployed using AZD:** You have the required access and may proceed directly to the demonstration steps.
-- **If using a pre-configured environment:** Review the [Demonstrator Access Requirements](./DemostratorAccessRequirement.md) guide to verify your access level.
+- **If using a pre-configured environment:** Review the [Demonstrator Access Requirements](./DemonstratorAccessRequirement.md) guide to verify your access level.
 
 ---
 
