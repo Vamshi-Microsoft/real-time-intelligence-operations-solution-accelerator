@@ -18,7 +18,7 @@ The Fabric Data Agent is an AI-powered assistant that provides natural language 
 **Instructions:**
 
 1. Refer to the [Fabric Data Agent Guide](./FabricDataAgentGuide.md) for detailed setup instructions
-2. Locate the Data Agent in your Fabric workspace
+2. After deployment (or if already deployed),locate the Data Agent in your Fabric workspace
 3. Submit questions about the data using the [provided sample questions](./fabric_data_agent/user_sample_test_questions.md) or your own queries
 4. Observe how the agent delivers instant responses in natural language
 
@@ -60,7 +60,7 @@ The Real-Time Intelligence Operations Dashboard displays critical business metri
 **Instructions:**
 
 1. Refer to the [Dashboard Guide](./RealTimeIntelligenceDashboardGuide.md) for detailed information
-2. On the dashboard, identify **anomaly spikes** in the data visualization. These represent potential operational issues
+2. On Fabric workspace Real-Time Dashboard, identify **anomaly spikes** in the data visualization. These represent potential operational issues
 3. Configure the time filter to display "Last 24 Hours" or "Last 2 Days" corresponding to the simulator start time
 4. Highlight the dashboard's real-time update capability as events are processed
 
@@ -79,8 +79,9 @@ When anomalies are detected, the system automatically generates alerts, enabling
 **Instructions:**
 
 1. Review the [Activator Guide](./ActivatorGuide.md) to understand alert configuration and functionality
-2. Ensure alerts are configured to send to an accessible email address (configuration updates may be required)
-3. Optionally configure alerts to be sent to a Microsoft Teams channel for team visibility
+2. Open Activator from the workspace
+3. Ensure alerts are configured to send to an accessible email address (configuration updates may be required)
+4. Optionally configure alerts to be sent to a Microsoft Teams channel for team visibility
 
 **Alert Behavior:**
 
