@@ -19,7 +19,7 @@ Update the Activator rules with your Outlook email address to receive alert noti
 
 1. Open the [Activator](./ActivatorGuide.md) in your Fabric workspace
 2. Navigate to the rule you wish to modify
-3. Locate the email notification settings on the right panel **Definations**
+3. Locate the email notification settings on the right panel **Definitions**
 4. Replace the existing email address with your Outlook email address
 5. Click **Save** to apply the changes
 6. Verify you have access to the updated email account to receive alerts
