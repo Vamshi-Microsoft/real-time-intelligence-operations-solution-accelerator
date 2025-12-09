@@ -114,23 +114,13 @@ azd env set FABRIC_ACTIVATOR_NAME "my_custom_activator"
 # Deploy everything
 azd up
 ```
+
 <br/>
 
-Check more deployment aspects in our [deployment guide](./docs/DeploymentGuide.md):
-
-| Topic | Description |
-|---|---|
-| [**Prerequisites**](./docs/DeploymentGuide.md#prerequisites) | Required Azure permissions, API access, and software installations (Python, Azure CLI, azd) |
-| [**Event Simulation**](./docs/DeploymentGuide.md#start-event-simulation) | Once deployed, generate real-time telemetry data and test anomaly detection with the event simulator tool |
-| [**Deployment validation**](./docs/DeploymentGuide.md#deployment-results) | Once deployed, verify Azure infrastructure, Fabric workspace components, and real-time data flow |
-| [**Deployment overview**](./docs/DeploymentGuide.md#deployment-overview) | Two-phase deployment process: Azure infrastructure provisioning and Fabric workspace setup |
-| [**Advanced configuration**](./docs/DeploymentGuide.md#advanced-configuration-options) | Customize workspace names, component names, email alerts, and capacity deployment options |
-| [**Alternative deployment options**](./docs/DeploymentGuide.md#deployment-options) | Deploy locally, Azure Cloud Shell, GitHub Codespaces, VS Code Dev Container or GitHub Actions|
-| [**Limitations**](./docs/DeploymentGuide.md#known-limitations) | See identified limitations of the solution |
-| [**Cleanup**](./docs/DeploymentGuide.md#environment-cleanup) | Remove all deployed resources and clean up your environment with `azd down` |
+For additional deployment configuration and detailed setup instructions, see the [deployment guide](./docs/DeploymentGuide.md).
 
 ### Prerequisites and costs
-Microsoft Fabric Capacity is enabled for your organization. Please refer to [Enable Microsoft Fabric for your organization](https://learn.microsoft.com/en-us/fabric/admin/fabric-switch) for more information. 
+Microsoft Fabric Capacity is enabled for your organization. Please refer to [Enable Microsoft Fabric for your organization](https://learn.microsoft.com/en-us/fabric/admin/fabric-switch) for more information.
 
 To deploy this solution accelerator, ensure you have access to an [Azure subscription](https://azure.microsoft.com/free/) with the necessary permissions to create **resource groups, resources, app registrations, and assign roles at the resource group level**. This should include Contributor role at the subscription level and Role Based Access Control role on the subscription and/or resource group level. Follow the steps in [Azure Account Set Up](./docs/AzureAccountSetUp.md).
 
