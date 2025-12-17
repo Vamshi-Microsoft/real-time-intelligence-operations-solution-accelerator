@@ -462,7 +462,7 @@ def main():
             notebook_folder_id=folder_id
         )
         if data_agent_result is None:
-            print(f"❌ Failed to create data agent: Unknown error")
+            print(f"⚠️ Failed to create data agent: Unknown error")
             print(f"📄 To complete data agent setup manually:")
             print(f"   1. Open Microsoft Fabric portal: https://app.fabric.microsoft.com")
             print(f"   2. Navigate to your workspace: {workspace_name}")
@@ -470,12 +470,12 @@ def main():
             print(f"   4. Configure the agent using the KQL database: {eventhouse_database_name}")
             print(f"\n📝 For detailed instructions, see: docs/FabricDataAgentGuide.md")
             print_steps_summary(solution_name, solution_suffix, executed_steps, [])
-            sys.exit(1)
+            sys.exit(0)
         print(f"✅ Successfully completed: setup_data_agent")
         executed_steps.append("setup_data_agent")
         data_agent_id = data_agent_result.get('id')
     except Exception as e:
-        print(f"❌ Exception while executing setup_data_agent: {e}")
+        print(f"⚠️ Exception while executing setup_data_agent: {e}")
         print(f"📄 To complete data agent setup manually:")
         print(f"   1. Open Microsoft Fabric portal: https://app.fabric.microsoft.com")
         print(f"   2. Navigate to your workspace: {workspace_name}")
@@ -483,7 +483,7 @@ def main():
         print(f"   4. Configure the agent using the KQL database: {eventhouse_database_name}")
         print(f"\n📝 For detailed instructions, see: docs/FabricDataAgentGuide.md")
         print_steps_summary(solution_name, solution_suffix, executed_steps, [])
-        sys.exit(1)
+        sys.exit(0)
     
     # Success!
     print(f"\n🎉 {solution_name} data initialization completed successfully!")
