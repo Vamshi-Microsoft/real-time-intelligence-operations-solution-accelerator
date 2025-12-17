@@ -47,23 +47,23 @@ PHASE 1: Infrastructure (Bicep)     PHASE 2: Fabric Setup (Python)
 
 **Phase 1** provisions Azure infrastructure using Bicep templates with ARM idempotency:
 
-- **Fabric Capacity** - Dedicated compute resources for Fabric workloads with auto-scaling capabilities
-- **Event Hub** - High-throughput streaming service for real-time data ingestion and event processing
-- **Resource Group** - Logical container organizing and managing all deployed Azure resources
+- **[Resource Group](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal#what-is-a-resource-group)** - Logical container organizing and managing all deployed Azure resources
+- **[Fabric Capacity](https://learn.microsoft.com/en-us/fabric/enterprise/licenses#capacity)** - Dedicated compute resources for Fabric workloads with auto-scaling capabilities
+- **[Event Hub](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-about)** - High-throughput streaming service for real-time data ingestion and event processing
 
 **Phase 2** manages Fabric components using Python scripts with intelligent resource detection:
 
 - **[Workspace](https://learn.microsoft.com/fabric/fundamentals/workspaces)** - Collaborative environment hosting all Fabric artifacts and configurations
 - **[Eventhouse](https://learn.microsoft.com/fabric/real-time-intelligence/eventhouse) & [KQL Database](https://learn.microsoft.com/en-us/fabric/real-time-intelligence/create-database)** - Real-time analytics engine with high-performance query capabilities and pre-configured schema
-- **Sample Data** - Pre-loaded telemetry data for immediate testing and demonstration purposes
+  - **Sample Data** - Pre-loaded telemetry data for immediate testing and demonstration purposes
 - **[Eventhub connection](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/add-source-azure-event-hubs?pivots=basic-features)** - Connection to the deployed Event Hub resource in Azure
 - **[Eventstream](https://learn.microsoft.com/en-us/fabric/real-time-intelligence/event-streams/overview?tabs=enhancedcapabilities)** - Data pipeline orchestration connecting Event Hub to Eventhouse with transformation rules
 - **[Real-Time Dashboard](https://learn.microsoft.com/en-us/fabric/real-time-intelligence/dashboard-real-time-create?tabs=create-manual%2Ckql-database)** - Interactive monitoring interface with live visualizations and drill-down analytics
 - **[Activator](https://learn.microsoft.com/en-us/fabric/real-time-intelligence/data-activator/activator-introduction)** - Automated anomaly detection system with configurable alert thresholds and notifications
 - **[Data Agent](https://learn.microsoft.com/en-us/fabric/data-science/concept-data-agent)** - AI-powered conversational interface for natural language data queries with configured notebook
 - **Folder** - Organizational container for grouping items required for Data Agent set up
-- **[Environment](https://learn.microsoft.com/en-us/fabric/data-engineering/create-and-use-environment)** - Fabric Environment for managing libraries, dependencies, and compute configurations required to run the notebook that configures the Data Agent
-- **[Notebook](https://learn.microsoft.com/en-us/fabric/data-engineering/how-to-use-notebook)** - Fabric Notebook with the script that uses [Fabric data agent Python SDK (in preview)](https://learn.microsoft.com/en-us/fabric/data-science/fabric-data-agent-sdk) to configure the Data Agent
+  - **[Environment](https://learn.microsoft.com/en-us/fabric/data-engineering/create-and-use-environment)** - Fabric Environment for managing libraries, dependencies, and compute configurations required to run the notebook that configures the Data Agent
+  - **[Notebook](https://learn.microsoft.com/en-us/fabric/data-engineering/how-to-use-notebook)** - Fabric Notebook with the script that uses [Fabric data agent Python SDK (in preview)](https://learn.microsoft.com/en-us/fabric/data-science/fabric-data-agent-sdk) to configure the Data Agent
 
 The entire process is orchestrated by Azure Developer CLI with comprehensive error handling and rollback capabilities.
 
