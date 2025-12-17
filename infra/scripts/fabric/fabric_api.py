@@ -3603,7 +3603,6 @@ class FabricWorkspaceApiClient(FabricApiClient):
             
         request_body = {
             "definition": {
-                "format": "null",
                 "parts": definition_parts
             }
         }
