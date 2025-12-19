@@ -102,9 +102,9 @@ class AssetType:
 
         defect_probability = round(
             (
-                vibration_factor * 0.4 +
-                temp_factor * 0.3 +
-                speed_factor * 0.3
+                vibration_factor * 0.4
+                + temp_factor * 0.3
+                + speed_factor * 0.3
             ) * random.uniform(0.8, 1.2),
             2
         )
