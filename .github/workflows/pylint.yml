@@ -24,7 +24,7 @@ jobs:
       
       - name: Run flake8
         run: |
-          flake8 src --ignore=E501  # Specify the directory to lint, ignore line-too-long
+          flake8 src --ignore=E501,W503  # Ignore line-too-long and deprecated W503
 
 
 
