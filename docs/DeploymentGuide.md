@@ -141,6 +141,7 @@ Select one of the following options to deploy the solution:
 | **[Local Machine](#option-c-local-machine)** | Install [software requirements](#14-software-requirements) | Most flexible, requires local setup |
 | **[Azure Cloud Shell](#option-d-azure-cloud-shell)** | Web browser | Pre-configured tools, session timeouts |
 | **[GitHub Actions](#option-e-github-actions)** | Azure service principal | Federated identity, automated deployment |
+| **[Visual Studio Code Web](#option-f-visual-studio-code-web)** | Web browser | Pre-configured tools, session timeouts |
 
 ### Option A: GitHub Codespaces
 
@@ -220,6 +221,27 @@ Select one of the following options to deploy the solution:
 6. Select **CI/CD Azure - Real-Time Intelligence Operations** workflow
 7. Click **Run workflow** and select your branch
 8. Monitor the deployment progress in the Actions tab
+
+### Option F: Visual Studio Code Web
+
+**Deploy from your browser—no local setup required.**
+
+1. Go to [VS Code Web](https://insiders.vscode.dev/azure/?vscode-azure-exp=foundry&agentPayload=eyJiYXNlVXJsIjogImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9taWNyb3NvZnQvcmVhbC10aW1lLWludGVsbGlnZW5jZS1vcGVyYXRpb25zLXNvbHV0aW9uLWFjY2VsZXJhdG9yL3JlZnMvaGVhZHMvbWFpbi9pbmZyYS92c2NvZGVfd2ViIiwgImluZGV4VXJsIjogIi9pbmRleC5qc29uIiwgInZhcmlhYmxlcyI6IHsiYWdlbnRJZCI6ICIiLCAiY29ubmVjdGlvblN0cmluZyI6ICIiLCAidGhyZWFkSWQiOiAiIiwgInVzZXJNZXNzYWdlIjogIiIsICJwbGF5Z3JvdW5kTmFtZSI6ICIiLCAibG9jYXRpb24iOiAiIiwgInN1YnNjcmlwdGlvbklkIjogIiIsICJyZXNvdXJjZUlkIjogIiIsICJwcm9qZWN0UmVzb3VyY2VJZCI6ICIiLCAiZW5kcG9pbnQiOiAiIn0sICJjb2RlUm91dGUiOiBbImFpLXByb2plY3RzLXNkayIsICJweXRob24iLCAiZGVmYXVsdC1henVyZS1hdXRoIiwgImVuZHBvaW50Il19)
+
+2. When prompted, sign in using your Microsoft account linked to your Azure subscription.
+
+   Select the appropriate subscription to continue.
+
+3. Ensure shell type is set to Bash
+
+4. Clone the repository:
+
+   ```bash
+   git clone https://github.com/microsoft/real-time-intelligence-operations-solution-accelerator.git
+   cd real-time-intelligence-operations-solution-accelerator
+   ```
+
+5. Proceed to [Step 4: Deploy](#step-4-deploy-the-solution)
 
 ---
 
