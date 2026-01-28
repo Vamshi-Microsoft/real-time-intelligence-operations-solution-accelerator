@@ -21,7 +21,7 @@
       "visualOptions": {
         "table__enableRenderLinks": true,
         "colorRulesDisabled": true,
-        "crossFilterDisabled": false,
+        "crossFilterDisabled": true,
         "drillthroughDisabled": false,
         "crossFilter": [],
         "drillthrough": [],
@@ -67,7 +67,7 @@
         "seriesColumns": null,
         "xAxisScale": "linear",
         "verticalLine": "",
-        "crossFilterDisabled": false,
+        "crossFilterDisabled": true,
         "drillthroughDisabled": false,
         "crossFilter": [],
         "drillthrough": []
@@ -111,7 +111,7 @@
         "seriesColumns": null,
         "xAxisScale": "linear",
         "verticalLine": "",
-        "crossFilterDisabled": false,
+        "crossFilterDisabled": true,
         "drillthroughDisabled": false,
         "crossFilter": [],
         "drillthrough": []
@@ -157,18 +157,18 @@
         "seriesColumns": null,
         "xAxisScale": "linear",
         "verticalLine": "",
-        "crossFilterDisabled": false,
+        "crossFilterDisabled": true,
         "drillthroughDisabled": false,
         "crossFilter": [
           {
             "interaction": "column",
             "property": "avgSpeed",
             "parameterId": "674b5b0c-92bc-472a-99b7-528c32250537",
-            "disabled": false
+            "disabled": true
           },
           {
             "parameterId": "4e53a01c-162c-406f-b0d3-5add1f64b933",
-            "disabled": false
+            "disabled": true
           }
         ],
         "drillthrough": []
@@ -212,7 +212,7 @@
         "seriesColumns": null,
         "xAxisScale": "linear",
         "verticalLine": "",
-        "crossFilterDisabled": false,
+        "crossFilterDisabled": true,
         "drillthroughDisabled": false,
         "crossFilter": [],
         "drillthrough": []
@@ -258,18 +258,18 @@
         "seriesColumns": null,
         "xAxisScale": "linear",
         "verticalLine": "",
-        "crossFilterDisabled": false,
+        "crossFilterDisabled": true,
         "drillthroughDisabled": false,
         "crossFilter": [
           {
             "interaction": "column",
             "property": "avgSpeed",
             "parameterId": "674b5b0c-92bc-472a-99b7-528c32250537",
-            "disabled": false
+            "disabled": true
           },
           {
             "parameterId": "4e53a01c-162c-406f-b0d3-5add1f64b933",
-            "disabled": false
+            "disabled": true
           }
         ],
         "drillthrough": []
@@ -315,18 +315,18 @@
         "seriesColumns": null,
         "xAxisScale": "linear",
         "verticalLine": "",
-        "crossFilterDisabled": false,
+        "crossFilterDisabled": true,
         "drillthroughDisabled": false,
         "crossFilter": [
           {
             "interaction": "column",
             "property": "avgSpeed",
             "parameterId": "674b5b0c-92bc-472a-99b7-528c32250537",
-            "disabled": false
+            "disabled": true
           },
           {
             "parameterId": "4e53a01c-162c-406f-b0d3-5add1f64b933",
-            "disabled": false
+            "disabled": true
           }
         ],
         "drillthrough": []
@@ -350,7 +350,7 @@
       "visualOptions": {
         "table__enableRenderLinks": true,
         "colorRulesDisabled": true,
-        "crossFilterDisabled": false,
+        "crossFilterDisabled": true,
         "drillthroughDisabled": false,
         "crossFilter": [],
         "drillthrough": [],
@@ -376,7 +376,7 @@
       "visualOptions": {
         "table__enableRenderLinks": true,
         "colorRulesDisabled": false,
-        "crossFilterDisabled": false,
+        "crossFilterDisabled": true,
         "drillthroughDisabled": false,
         "crossFilter": [],
         "drillthrough": [],
@@ -470,7 +470,7 @@
         "seriesColumns": null,
         "xAxisScale": "linear",
         "verticalLine": "",
-        "crossFilterDisabled": false,
+        "crossFilterDisabled": true,
         "drillthroughDisabled": false,
         "crossFilter": [],
         "drillthrough": []
