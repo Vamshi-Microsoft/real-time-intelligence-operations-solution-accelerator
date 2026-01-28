@@ -1,6 +1,8 @@
 {
     "name": "Real-Time Intelligence Operations Solution Accelerator Dev Container",
-    "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
+    "build": {
+        "dockerfile": "Dockerfile"
+    }, 
     "features": {
         "ghcr.io/devcontainers/features/azure-cli:1": {
             "version": "latest",
