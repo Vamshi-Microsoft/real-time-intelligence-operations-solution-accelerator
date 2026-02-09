@@ -122,9 +122,21 @@ jobs:
           AZURE_RESOURCE_GROUP: ${{ env.RESOURCE_GROUP_NAME }}
           FABRIC_WORKSPACE_ADMINISTRATORS: ${{ env.FABRIC_WORKSPACE_ADMINISTRATORS }}
         with:
-          # Optional: cache the built devcontainer image to GHCR to speed up runs
-          # imageName: ghcr.io/${{ github.repository }}/devcontainer
-          # cacheFrom: ghcr.io/${{ github.repository }}/devcontainer
+          # Cache the built devcontainer image to GHCR to reuse across runs
+          imageName: ghcr.io/${{ github.repository }}/devcontainer
+          cacheFrom: ghcr.io/${{ github.repository }}/devcontainer
+          push: filter
+
+          # Explicitly forward env vars into the devcontainer
+          env: |
+            AZURE_CLIENT_ID
+            AZURE_TENANT_ID
+            AZURE_SUBSCRIPTION_ID
+            AZURE_CLIENT_SECRET
+            AZURE_ENV_NAME
+            AZURE_LOCATION
+            AZURE_RESOURCE_GROUP
+            FABRIC_WORKSPACE_ADMINISTRATORS
 
           runCmd: |
             echo "🐳 Running inside devcontainer — same environment as Codespaces"
