@@ -1,0 +1,238 @@
+name: CI/CD Azure - Real-Time Intelligence Operations (DevContainer)
+
+# This workflow uses the same devcontainer as Codespaces.
+# The devcontainer (Dockerfile + features + post-create.sh) installs everything:
+#   Python 3.12, Azure CLI + Bicep, azd, PowerShell, Git, pip dependencies
+# So the workflow simply: logs in → runs azd up. Just like in Codespaces.
+
+on:
+  workflow_dispatch:
+    inputs:
+      AZURE_ENV_NAME:
+        description: 'azd environment name (overrides auto-generated name)'
+        required: false
+        type: string
+      AZURE_LOCATION:
+        description: 'Azure region (e.g., eastus)'
+        required: false
+        type: string
+        default: 'australiaeast'
+      resource_group_name:
+        description: 'Resource group name (leave empty to auto-generate)'
+        required: false
+        type: string
+#   push:
+#     branches:
+#       - main
+#       - dev
+
+permissions:
+  contents: read
+  packages: write  # Required to push devcontainer image to GHCR (optional caching)
+
+env:
+  AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+  AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+  AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+  AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  AZURE_ENV_NAME: ${{ inputs.AZURE_ENV_NAME || vars.AZURE_ENV_NAME }}
+  AZURE_LOCATION: ${{ inputs.AZURE_LOCATION || vars.AZURE_LOCATION }}
+  FABRIC_WORKSPACE_ADMINISTRATORS: ${{ vars.FABRIC_WORKSPACE_ADMINISTRATORS }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy via azd up (DevContainer)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to Azure
+        shell: bash
+        run: |
+          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Generate Resource Group Name
+        id: generate_rg_name
+        shell: bash
+        env:
+          INPUT_RESOURCE_GROUP_NAME: ${{ inputs.resource_group_name }}
+        run: |
+          # Check if a resource group name was provided as input
+          if [[ -n "$INPUT_RESOURCE_GROUP_NAME" ]]; then
+            echo "Using provided Resource Group name: $INPUT_RESOURCE_GROUP_NAME"
+            echo "RESOURCE_GROUP_NAME=$INPUT_RESOURCE_GROUP_NAME" >> $GITHUB_ENV
+          else
+            echo "Generating a unique resource group name..."
+            ACCL_NAME="cp"
+            SHORT_UUID=$(uuidgen | cut -d'-' -f1)
+            UNIQUE_RG_NAME="arg-${ACCL_NAME}-${SHORT_UUID}"
+            echo "RESOURCE_GROUP_NAME=${UNIQUE_RG_NAME}" >> $GITHUB_ENV
+            echo "Generated RESOURCE_GROUP_NAME: ${UNIQUE_RG_NAME}"
+          fi
+
+      - name: Check and Create Resource Group
+        id: check_create_rg
+        shell: bash
+        run: |
+          set -e
+          echo "🔍 Checking if resource group '$RESOURCE_GROUP_NAME' exists..."
+          rg_exists=$(az group exists --name $RESOURCE_GROUP_NAME)
+          if [ "$rg_exists" = "false" ]; then
+            echo "📦 Resource group does not exist. Creating new resource group '$RESOURCE_GROUP_NAME' in location '$AZURE_LOCATION'..."
+            az group create --name $RESOURCE_GROUP_NAME --location $AZURE_LOCATION || { echo "❌ Error creating resource group"; exit 1; }
+            echo "✅ Resource group '$RESOURCE_GROUP_NAME' created successfully."
+          else
+            echo "✅ Resource group '$RESOURCE_GROUP_NAME' already exists. Deploying to existing resource group."
+          fi
+          echo "RESOURCE_GROUP_NAME=$RESOURCE_GROUP_NAME" >> $GITHUB_OUTPUT
+          echo "RESOURCE_GROUP_NAME=$RESOURCE_GROUP_NAME" >> $GITHUB_ENV
+
+      - name: Generate Unique Environment Name
+        id: generate_env_name
+        shell: bash
+        env:
+          INPUT_ENV_NAME: ${{ inputs.AZURE_ENV_NAME }}
+        run: |
+          if [[ -n "$INPUT_ENV_NAME" ]]; then
+            echo "Using provided environment name: $INPUT_ENV_NAME"
+            echo "ENV_NAME=$INPUT_ENV_NAME" >> $GITHUB_ENV
+          else
+            COMMON_PART="pslc"
+            TIMESTAMP=$(date +%s)
+            UPDATED_TIMESTAMP=$(echo $TIMESTAMP | tail -c 6)
+            UNIQUE_ENV_NAME="${COMMON_PART}${UPDATED_TIMESTAMP}"
+            echo "ENV_NAME=${UNIQUE_ENV_NAME}" >> $GITHUB_ENV
+            echo "Generated Environment Name: ${UNIQUE_ENV_NAME}"
+          fi
+          echo "ENV_NAME=${ENV_NAME}" >> $GITHUB_OUTPUT
+
+      # Build devcontainer and run azd up inside it — identical to Codespaces
+      - name: Deploy with azd up in DevContainer
+        uses: devcontainers/ci@v0.3
+        env:
+          # Pass Azure credentials into the container for azd/az login
+          AZURE_CLIENT_ID: ${{ env.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ env.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ env.AZURE_SUBSCRIPTION_ID }}
+          AZURE_CLIENT_SECRET: ${{ env.AZURE_CLIENT_SECRET }}
+          AZURE_ENV_NAME: ${{ env.ENV_NAME }}
+          AZURE_LOCATION: ${{ env.AZURE_LOCATION }}
+          AZURE_RESOURCE_GROUP: ${{ env.RESOURCE_GROUP_NAME }}
+          FABRIC_WORKSPACE_ADMINISTRATORS: ${{ env.FABRIC_WORKSPACE_ADMINISTRATORS }}
+        with:
+          # Optional: cache the built devcontainer image to GHCR to speed up runs
+          # imageName: ghcr.io/${{ github.repository }}/devcontainer
+          # cacheFrom: ghcr.io/${{ github.repository }}/devcontainer
+
+          runCmd: |
+            echo "🐳 Running inside devcontainer — same environment as Codespaces"
+            echo "Python:     $(python3 --version)"
+            echo "Azure CLI:  $(az version --query '"azure-cli"' -o tsv)"
+            echo "azd:        $(azd version)"
+            echo "PowerShell: $(pwsh --version)"
+            echo ""
+
+            # 1. Authenticate azd using client secret
+            echo "🔐 Logging in with azd (client secret)..."
+            azd auth login \
+              --client-id "$AZURE_CLIENT_ID" \
+              --client-secret "$AZURE_CLIENT_SECRET" \
+              --tenant-id "$AZURE_TENANT_ID"
+
+            # 2. Initialize azd environment
+            echo "⚙️ Configuring azd environment..."
+            echo "  Environment Name: $AZURE_ENV_NAME"
+            echo "  Resource Group:   $AZURE_RESOURCE_GROUP"
+            echo "  Location:         $AZURE_LOCATION"
+            echo ""
+            azd env new "$AZURE_ENV_NAME" --no-prompt || true
+            azd env select "$AZURE_ENV_NAME"
+            azd env set AZURE_SUBSCRIPTION_ID "$AZURE_SUBSCRIPTION_ID"
+            azd env set AZURE_LOCATION "$AZURE_LOCATION"
+            azd env set AZURE_RESOURCE_GROUP "$AZURE_RESOURCE_GROUP"
+
+            # Set optional Fabric configuration if provided
+            if [ -n "$FABRIC_WORKSPACE_ADMINISTRATORS" ]; then
+              azd env set FABRIC_WORKSPACE_ADMINISTRATORS "$FABRIC_WORKSPACE_ADMINISTRATORS"
+            fi
+
+            # 3. Run azd up — provisions infra (Bicep) + runs postprovision hook (Fabric)
+            #    This is the exact same command you'd run in Codespaces or locally
+            echo "🚀 Running azd up..."
+            azd up --no-prompt
+
+            # 4. Export azd env values to a file so the host summary step can read them
+            echo "📝 Exporting azd environment values..."
+            azd env get-values > /tmp/azd-env-values.txt 2>/dev/null || true
+            cp /tmp/azd-env-values.txt "$PWD/.azd-env-output" || true
+
+            echo ""
+            echo "✅ Deployment complete!"
+
+      - name: Load azd Environment Outputs
+        id: azd_outputs
+        if: always()
+        run: |
+          # Read the azd env values exported from the devcontainer
+          if [ -f .azd-env-output ]; then
+            echo "📝 Loading azd environment values..."
+            # Source the file (format: KEY=\"value\") and export to GITHUB_ENV
+            while IFS= read -r line; do
+              # Strip surrounding quotes from values
+              key=$(echo "$line" | cut -d'=' -f1)
+              value=$(echo "$line" | cut -d'=' -f2- | sed 's/^"//' | sed 's/"$//')
+              if [ -n "$key" ] && [ -n "$value" ]; then
+                echo "${key}=${value}" >> $GITHUB_ENV
+              fi
+            done < .azd-env-output
+            echo "✅ Loaded azd environment values"
+          else
+            echo "⚠️ No azd env output file found (.azd-env-output)"
+          fi
+
+      - name: Output Deployment Summary
+        if: always()
+        run: |
+          # Fallback values if azd outputs are not available
+          SUFFIX=${SOLUTION_SUFFIX:-"unknown"}
+          CAPACITY=${AZURE_FABRIC_CAPACITY_NAME:-"unknown"}
+          EH_NAMESPACE=${AZURE_EVENT_HUB_NAMESPACE_NAME:-"unknown"}
+          EH_NAME=${AZURE_EVENT_HUB_NAME:-"unknown"}
+
+          echo "## 🎉 Real-Time Intelligence Operations Deployment Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📅 **Completed:** $(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_STEP_SUMMARY
+          echo "🏷️ **Environment:** ${{ env.ENV_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "🔖 **Solution Suffix:** ${SUFFIX}" >> $GITHUB_STEP_SUMMARY
+          echo "📍 **Location:** ${{ env.AZURE_LOCATION }}" >> $GITHUB_STEP_SUMMARY
+          echo "🐳 **Method:** DevContainer-based CI/CD (azd up)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🏢 Azure Resources Deployed" >> $GITHUB_STEP_SUMMARY
+          echo "| Resource | Name |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 📂 Resource Group | ${{ env.RESOURCE_GROUP_NAME }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ⚡ Fabric Capacity | ${CAPACITY} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📡 Event Hub Namespace | ${EH_NAMESPACE} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📨 Event Hub | ${EH_NAME} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Azure Portal Links" >> $GITHUB_STEP_SUMMARY
+          echo "- 📂 [Resource Group](https://portal.azure.com/#@${{ env.AZURE_TENANT_ID }}/resource/subscriptions/${{ env.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ env.RESOURCE_GROUP_NAME }}/overview)" >> $GITHUB_STEP_SUMMARY
+          echo "- ⚡ [Fabric Capacity](https://portal.azure.com/#@${{ env.AZURE_TENANT_ID }}/resource/subscriptions/${{ env.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ env.RESOURCE_GROUP_NAME }}/providers/Microsoft.Fabric/capacities/${CAPACITY}/overview)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📡 [Event Hub Namespace](https://portal.azure.com/#@${{ env.AZURE_TENANT_ID }}/resource/subscriptions/${{ env.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ env.RESOURCE_GROUP_NAME }}/providers/Microsoft.EventHub/namespaces/${EH_NAMESPACE}/overview)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔧 Fabric Resources (Expected Names)" >> $GITHUB_STEP_SUMMARY
+          echo "The following Fabric resources should have been created with these naming patterns:" >> $GITHUB_STEP_SUMMARY
+          echo "- 🏠 **Workspace:** rti_workspace_${SUFFIX}" >> $GITHUB_STEP_SUMMARY
+          echo "- 🏛️ **Eventhouse:** rti_eventhouse_${SUFFIX}" >> $GITHUB_STEP_SUMMARY
+          echo "- 🗄️ **Database:** rti_kqldb_${SUFFIX}" >> $GITHUB_STEP_SUMMARY
+          echo "- 📊 **Dashboard:** rti_dashboard_${SUFFIX}" >> $GITHUB_STEP_SUMMARY
+          echo "- 🌊 **Eventstream:** rti_eventstream_${SUFFIX}" >> $GITHUB_STEP_SUMMARY
+          echo "- 🚨 **Activator:** rti_activator_${SUFFIX}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🚀 Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. 📊 Access your Fabric workspace at [app.fabric.microsoft.com](https://app.fabric.microsoft.com)" >> $GITHUB_STEP_SUMMARY
+          echo "2. 🎯 Start the event simulator to generate sample data" >> $GITHUB_STEP_SUMMARY
+          echo "3. 📈 View real-time analytics in the dashboard" >> $GITHUB_STEP_SUMMARY
+          echo "4. 🔔 Configure alert recipients in the Activator" >> $GITHUB_STEP_SUMMARY
