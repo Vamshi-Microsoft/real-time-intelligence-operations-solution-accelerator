@@ -140,7 +140,7 @@ jobs:
           # Cache the built devcontainer image to GHCR to reuse across runs
           imageName: ${{ env.IMAGE_NAME }}
           cacheFrom: ${{ env.IMAGE_NAME }}
-          push: filter
+          push: always
 
           # Explicitly forward env vars into the devcontainer
           env: |
