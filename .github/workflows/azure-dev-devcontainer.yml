@@ -25,6 +25,10 @@ on:
         description: 'Workspace administrator mcap email (Optional)'
         required: false
         type: string
+      FABRIC_WORKSPACE_NAME:
+        description: 'Custom Fabric workspace name (leave empty for default)'
+        required: false
+        type: string
 #   push:
 #     branches:
 #       - main
@@ -42,6 +46,7 @@ env:
   AZURE_ENV_NAME: ${{ inputs.AZURE_ENV_NAME || vars.AZURE_ENV_NAME }}
   AZURE_LOCATION: ${{ inputs.AZURE_LOCATION || vars.AZURE_LOCATION }}
   FABRIC_WORKSPACE_ADMINISTRATORS: ${{ inputs.FABRIC_WORKSPACE_ADMINISTRATORS || vars.FABRIC_WORKSPACE_ADMINISTRATORS }}
+  FABRIC_WORKSPACE_NAME: ${{ inputs.FABRIC_WORKSPACE_NAME || vars.FABRIC_WORKSPACE_NAME }}
 
 jobs:
   deploy:
@@ -136,6 +141,7 @@ jobs:
           AZURE_LOCATION: ${{ env.AZURE_LOCATION }}
           AZURE_RESOURCE_GROUP: ${{ env.RESOURCE_GROUP_NAME }}
           FABRIC_WORKSPACE_ADMINISTRATORS: ${{ env.FABRIC_WORKSPACE_ADMINISTRATORS }}
+          FABRIC_WORKSPACE_NAME: ${{ env.FABRIC_WORKSPACE_NAME }}
         with:
           # Cache the built devcontainer image to GHCR to reuse across runs
           imageName: ${{ env.IMAGE_NAME }}
@@ -152,6 +158,7 @@ jobs:
             AZURE_LOCATION
             AZURE_RESOURCE_GROUP
             FABRIC_WORKSPACE_ADMINISTRATORS
+            FABRIC_WORKSPACE_NAME
 
           runCmd: |
             echo "🐳 Running inside devcontainer — same environment as Codespaces"
@@ -187,6 +194,10 @@ jobs:
             # Set optional Fabric configuration if provided
             if [ -n "$FABRIC_WORKSPACE_ADMINISTRATORS" ]; then
               azd env set FABRIC_WORKSPACE_ADMINISTRATORS "$FABRIC_WORKSPACE_ADMINISTRATORS"
+            fi
+
+            if [ -n "$FABRIC_WORKSPACE_NAME" ]; then
+              azd env set FABRIC_WORKSPACE_NAME "$FABRIC_WORKSPACE_NAME"
             fi
 
             # 3. Run azd up — provisions infra (Bicep) + runs postprovision hook (Fabric)
