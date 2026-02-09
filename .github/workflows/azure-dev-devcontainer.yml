@@ -21,6 +21,10 @@ on:
         description: 'Resource group name (leave empty to auto-generate)'
         required: false
         type: string
+      FABRIC_WORKSPACE_ADMINISTRATORS:
+        description: 'Workspace administrator mcap email (Optional)'
+        required: false
+        type: string
 #   push:
 #     branches:
 #       - main
@@ -37,7 +41,7 @@ env:
   AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   AZURE_ENV_NAME: ${{ inputs.AZURE_ENV_NAME || vars.AZURE_ENV_NAME }}
   AZURE_LOCATION: ${{ inputs.AZURE_LOCATION || vars.AZURE_LOCATION }}
-  FABRIC_WORKSPACE_ADMINISTRATORS: ${{ vars.FABRIC_WORKSPACE_ADMINISTRATORS }}
+  FABRIC_WORKSPACE_ADMINISTRATORS: ${{ inputs.FABRIC_WORKSPACE_ADMINISTRATORS || vars.FABRIC_WORKSPACE_ADMINISTRATORS }}
 
 jobs:
   deploy:
