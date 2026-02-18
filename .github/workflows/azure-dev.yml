@@ -26,9 +26,9 @@ permissions:
   contents: read
 
 env:
-  AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-  AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-  AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   AZURE_ENV_NAME_DEV: '${{ vars.AZURE_ENV_NAME }}d'
   AZURE_RESOURCE_GROUP_NAME_DEV: 'rg-${{ vars.AZURE_ENV_NAME }}d'
   # Optional environment variables
@@ -38,7 +38,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Build and Static Analysis
-    environment: 'rti-build'
+    environment: 'rti'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -79,7 +79,7 @@ jobs:
   deploy-dev:
     runs-on: ubuntu-latest
     name: Deploy to Development
-    environment: 'rti-dev'
+    environment: 'rti'
     needs: build
     # if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/pre-deploy-alguadam' || github.event_name == 'workflow_dispatch'
     steps:
