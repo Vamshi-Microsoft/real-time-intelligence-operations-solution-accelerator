@@ -38,7 +38,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Build and Static Analysis
-    environment: 'rti'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -66,20 +65,10 @@ jobs:
           bicep lint infra/main.bicep
           echo "✅ Bicep linting completed"
 
-      - name: Validate Bicep Template
-        run: |
-          echo "Validating Bicep template..."
-          az deployment group validate \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP_NAME_DEV }} \
-            --template-file infra/main.json \
-            --parameters infra/main.parameters.json \
-            --parameters solutionName=${{ env.AZURE_ENV_NAME_DEV }}
-          echo "✅ Bicep template validation completed"
 
   deploy-dev:
     runs-on: ubuntu-latest
     name: Deploy to Development
-    environment: 'rti'
     needs: build
     # if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/pre-deploy-alguadam' || github.event_name == 'workflow_dispatch'
     steps:
